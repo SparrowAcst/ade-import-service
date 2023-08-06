@@ -1,0 +1,102 @@
+
+openapi: "3.0.3"
+
+info:
+  title: "ADE Import Service - OpenAPI 3.0.3"
+  description: |-
+  version: "1.0.0"
+
+servers:
+  - url: http://localhost:3000
+
+paths:
+  /examination:
+    post:
+      summary: Add a new examination
+      description: Add a new examination
+      requestBody:
+        description: Create a new pet in the store
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Examination'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Examination'          
+        '405':
+          description: Invalid input
+        
+        '500':
+          description: Service error
+          content: 
+            text/plain:
+              schema:
+                type: string
+
+  /recording:
+    post:
+      summary: Upload recording
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - examinationId
+                - spot
+                - position
+                - file
+              properties:
+                examinationId:
+                  type: string
+                  format: uuid
+                spot:
+                  type: string
+                position:
+                  type: string
+                # 'file' will be the field name in this multipart request
+                file:
+                  type: string
+                  format: binary 
+                  
+                
+      responses:
+        '200':
+          description: Successful operation
+        '404':
+          description: Examination not found
+        '405':
+          description: Invalid input
+        '500':
+          description: Service error
+          content: 
+            text/plain:
+              schema:
+                type: string
+
+
+
+components:
+  schemas:
+    Examination:
+      type: object
+      required:
+        - dateTime
+      properties:
+        id:
+          type: string
+          format: uuid
+        dateTime:
+            type: string
+            format: date-time
+        age:
+          type: integer
+        weight:
+          type: integer
+        height:
+          type: integer
