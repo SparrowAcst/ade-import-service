@@ -3,11 +3,10 @@ openapi: "3.0.3"
 
 info:
   title: "ADE Import Service - OpenAPI 3.0.3"
-  description: |-
   version: "1.0.0"
 
 servers:
-  - url: http://localhost:3000
+  - url: http://localhost:3001
 
 paths:
   /examination:
@@ -15,11 +14,11 @@ paths:
       summary: Add a new examination
       description: Add a new examination
       requestBody:
-        description: Create a new pet in the store
+        description: Create a new examination
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Examination'
+              $ref: '#/components/schemas/ExaminationRequest'
         required: true
       responses:
         '200':
@@ -27,16 +26,12 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Examination'          
-        '405':
+                $ref: '#/components/schemas/ExaminationResponse'          
+        '422':
           description: Invalid input
         
         '500':
           description: Service error
-          content: 
-            text/plain:
-              schema:
-                type: string
 
   /recording:
     post:
@@ -59,6 +54,7 @@ paths:
                   type: string
                 position:
                   type: string
+
                 # 'file' will be the field name in this multipart request
                 file:
                   type: string
@@ -68,25 +64,55 @@ paths:
       responses:
         '200':
           description: Successful operation
-        '404':
-          description: Examination not found
-        '405':
+        '422':
           description: Invalid input
         '500':
           description: Service error
-          content: 
-            text/plain:
-              schema:
-                type: string
 
 
 
 components:
   schemas:
-    Examination:
+    ExaminationRequest:
       type: object
       required:
         - dateTime
+      properties:
+        dateTime:
+            type: string
+            format: date-time
+        patient:
+          type: object
+          properties:
+            sex_at_birth:
+              type: string
+              enum:
+                - Male
+                - Female
+                - N/A 
+            ethnicity:
+              type: string
+              enum:
+                - American Indian 
+                - Alaska Native
+                - Asian
+                - African American
+                - Hispanic/
+                - Latino
+                - Native Hawaiian or Other Pacific Islander
+                - White
+                - Not specified  
+            age: 
+              type: integer # years
+            weight:
+              type: integer # kg
+            height:
+              type: integer # meters
+
+    ExaminationResponse:      
+      type: object
+      required:
+        - id
       properties:
         id:
           type: string
@@ -94,9 +120,3 @@ components:
         dateTime:
             type: string
             format: date-time
-        age:
-          type: integer
-        weight:
-          type: integer
-        height:
-          type: integer
